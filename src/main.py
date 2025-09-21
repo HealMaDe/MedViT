@@ -7,7 +7,7 @@ if __name__ == "__main__":
     with open("configs/base_config.json", "r") as f:
         base_cfg = json.load(f)
 
-    # --- User inputs (you can later replace with argparse for CLI use) ---
+    # --- User inputs ---
     dataset = "breastmnist"     # 👈 user sets
     img_size = 28               # 👈 user sets (depends on dataset)
     patch_sizes = [28, 14, 7]   # 👈 user sets
@@ -33,3 +33,4 @@ if __name__ == "__main__":
     print("\n✅ Experiment finished. Results:")
     for r in results:
         print(r)
+
