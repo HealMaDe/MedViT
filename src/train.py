@@ -131,7 +131,7 @@ def run_experiment(cfg, device):
 
                     print(f"Epoch {epoch}/{epochs} | LR {optimizer.param_groups[0]['lr']:.2e} "
                           f"| Train loss {train_loss:.4f} / Train acc {train_acc*100:.2f}% "
-                          f"| Val loss {val_loss:.4f} / Val acc {val_acc*100:.2f}% / Val bal_acc {val_bal_acc*100:.2f}% / val auc {val_auc*100:.2f}")
+                          f"| Val loss {val_loss:.4f} / Val acc {val_acc*100:.2f}% / Val bal_acc {val_bal_acc*100:.2f}% / val auc {val_auc*100:.2f}%")
 
                     history["train_loss"].append(train_loss)
                     history["train_acc"].append(round(train_acc*100,2))
@@ -189,5 +189,6 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
