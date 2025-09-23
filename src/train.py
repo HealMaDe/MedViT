@@ -71,7 +71,7 @@ def evaluate(model, loader, criterion, num_classes, device):
     except Exception:
         auc = 0.0
 
-    return running_loss / len(loader.dataset), round(acc*100,2), round(bal_acc*100,2), round(auc*100,2), elapsed, fps
+    return running_loss / len(loader.dataset), acc, bal_acc, auc, elapsed, fps
 
 
 def run_experiment(cfg, device):
@@ -189,4 +189,5 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
