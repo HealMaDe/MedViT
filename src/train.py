@@ -71,7 +71,7 @@ def evaluate(model, loader, criterion, num_classes, device):
     except Exception:
         auc = 0.0
 
-    return running_loss / len(loader.dataset), acc, bal_acc, auc, elapsed, fps
+    return running_loss / len(loader.dataset), round(acc*100,2), round(bal_acc*100,2), round(auc*100,2), elapsed, fps
 
 
 def run_experiment(cfg, device):
@@ -101,6 +101,7 @@ def run_experiment(cfg, device):
     test_loader  = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
 
     num_classes = len(set(train_ds.labels.flatten()))
+    num_test_samples = len(test_ds)
 
     # Robustness loop
     all_runs = []
@@ -129,14 +130,14 @@ def run_experiment(cfg, device):
                     val_loss, val_acc, val_bal_acc, val_auc, _, _ = evaluate(model, val_loader, criterion, num_classes, device)
 
                     print(f"Epoch {epoch}/{epochs} | LR {optimizer.param_groups[0]['lr']:.2e} "
-                          f"| Train {train_loss:.4f}/{train_acc:.4f} "
-                          f"| Val {val_loss:.4f}/{val_acc:.4f}/{val_bal_acc:.4f}/{val_auc:.4f}")
+                          f"| Train loss {train_loss:.4f} / Train acc {train_acc*100:.2f}% "
+                          f"| Val loss {val_loss:.4f} / Val acc {val_acc*100:.2f}% / Val bal_acc {val_bal_acc*100:.2f}% / val auc {val_auc*100:.2f}")
 
                     history["train_loss"].append(train_loss)
-                    history["train_acc"].append(train_acc)
+                    history["train_acc"].append(round(train_acc*100,2))
                     history["val_loss"].append(val_loss)
-                    history["val_acc"].append(val_acc)
-                    history["val_auc"].append(val_auc)
+                    history["val_acc"].append(round(val_acc*100,2))
+                    history["val_auc"].append(round(val_auc*100,2))
 
                     if val_loss < best_val_loss:
                         best_val_loss = val_loss
@@ -150,7 +151,8 @@ def run_experiment(cfg, device):
                 test_loss, test_acc, test_bal_acc, test_auc, test_time, fps = evaluate(
                     model, test_loader, criterion, num_classes, device
                 )
-
+                
+                test_time_per_img = (test_time / num_test_samples) * 1000   # ms
                 peak_vram_mb = torch.cuda.max_memory_allocated() / (1024**2) if device == "cuda" else "N/A"
 
                 run_result = {
@@ -159,12 +161,12 @@ def run_experiment(cfg, device):
                     "patch_size": patch_size,
                     "run_id": run_id,
                     "test_loss": test_loss,
-                    "test_acc": test_acc,
-                    "test_bal_acc": test_bal_acc,
-                    "test_auc": test_auc,
-                    "train_time": total_train_time,
-                    "test_time": test_time,
-                    "fps": fps,
+                    "test_acc": round(test_acc*100,2),
+                    "test_bal_acc": round(test_bal_acc*100,2),
+                    "test_auc": round(test_auc*100,2),
+                    "train_time": round(total_train_time,2),
+                    "test_time_per_image": round(test_time_per_img,2),
+                    "fps": round(fps,2),
                     "vram_mb": peak_vram_mb,
                 }
                 all_runs.append(run_result)
@@ -179,9 +181,12 @@ def run_experiment(cfg, device):
     if robustness > 1:
         import pandas as pd
         df = pd.DataFrame(all_runs)
-        avg_df = df.groupby(["dataset", "model", "patch_size"]).mean().reset_index()
+        avg_df = df.groupby(["dataset", "model", "patch_size"]).agg(["mean", "std"]).reset_index()
+        agg_df.columns = ["_".join(col).rstrip("_") for col in agg_df.columns.values]
+        
         avg_path = f"{save_dir}/avg_results_{dataset}.csv"
         avg_df.to_csv(avg_path, index=False)
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
