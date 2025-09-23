@@ -4,7 +4,7 @@ from src.train import run_experiment
 
 if __name__ == "__main__":
     # --- Load constants from config ---
-    with open("configs/base_config.json", "r") as f:
+    with open("../configs/base_config.json", "r") as f:
         base_cfg = json.load(f)
 
     # --- User inputs ---
@@ -33,4 +33,5 @@ if __name__ == "__main__":
     print("\n✅ Experiment finished. Results:")
     for r in results:
         print(r)
+
 
