@@ -181,7 +181,7 @@ def run_experiment(cfg, device):
     if robustness > 1:
         import pandas as pd
         df = pd.DataFrame(all_runs)
-        avg_df = df.groupby(["dataset", "model", "patch_size"]).agg(["mean", "std"]).reset_index()
+        agg_df = df.groupby(["dataset", "model", "patch_size"]).agg(["mean", "std"]).reset_index()
         agg_df.columns = ["_".join(col).rstrip("_") for col in agg_df.columns.values]
         
         avg_path = f"{save_dir}/avg_results_{dataset}.csv"
@@ -189,6 +189,7 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
