@@ -185,10 +185,11 @@ def run_experiment(cfg, device):
         agg_df.columns = ["_".join(col).rstrip("_") for col in agg_df.columns.values]
         
         avg_path = f"{save_dir}/avg_results_{dataset}.csv"
-        avg_df.to_csv(avg_path, index=False)
+        agg_df.to_csv(avg_path, index=False)
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
