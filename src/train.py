@@ -166,7 +166,7 @@ def run_experiment(cfg, device):
                     "train_time": round(total_train_time,2),
                     "test_time_per_image": round(test_time_per_img,2),
                     "fps": round(fps,2),
-                    "vram_mb": peak_vram_mb,
+                    "vram_mb": round(peak_vram_mb,2),
                 }
                 all_runs.append(run_result)
 
@@ -198,6 +198,7 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
