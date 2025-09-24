@@ -133,9 +133,9 @@ def run_experiment(cfg, device):
                           f"| Train loss {train_loss:.4f} / Train acc {train_acc*100:.2f}% "
                           f"| Val loss {val_loss:.4f} / Val acc {val_acc*100:.2f}% / Val bal_acc {val_bal_acc*100:.2f}% / val auc {val_auc*100:.2f}%")
 
-                    history["train_loss"].append(train_loss)
+                    history["train_loss"].append(round(train_loss,2))
                     history["train_acc"].append(round(train_acc*100,2))
-                    history["val_loss"].append(val_loss)
+                    history["val_loss"].append(round(val_loss,2))
                     history["val_acc"].append(round(val_acc*100,2))
                     history["val_auc"].append(round(val_auc*100,2))
 
@@ -159,8 +159,7 @@ def run_experiment(cfg, device):
                     "dataset": dataset,
                     "model": model_name,
                     "patch_size": patch_size,
-                    "run_id": run_id,
-                    "test_loss": test_loss,
+                    "test_loss": round(test_loss,2),
                     "test_acc": round(test_acc*100,2),
                     "test_bal_acc": round(test_bal_acc*100,2),
                     "test_auc": round(test_auc*100,2),
@@ -183,12 +182,23 @@ def run_experiment(cfg, device):
         df = pd.DataFrame(all_runs)
         agg_df = df.groupby(["dataset", "model", "patch_size"]).agg(["mean", "std"]).reset_index()
         agg_df.columns = ["_".join(col).rstrip("_") for col in agg_df.columns.values]
+
+        # Format metrics
+        for metric in ["test_acc", "test_bal_acc", "test_auc"]:
+            agg_df[f"{metric}_mean"] = agg_df[f"{metric}_mean"].map(lambda x: f"{x*100:.2f}%")
+            agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x*100:.2f}")
+
+        for metric in ["test_loss", "train_time_sec", "test_time_ms_per_img", "fps", "vram_mb"]:
+            if f"{metric}_mean" in agg_df.columns:
+                agg_df[f"{metric}_mean"] = agg_df[f"{metric}_mean"].map(lambda x: f"{x:.2f}")
+                agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
         
         avg_path = f"{save_dir}/avg_results_{dataset}.csv"
         agg_df.to_csv(avg_path, index=False)
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
