@@ -189,15 +189,16 @@ def run_experiment(cfg, device):
             agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
 
         for metric in ["test_loss", "train_time", "test_time_per_image", "fps", "vram_mb"]:
-            if f"{metric}_mean" in agg_df.columns:
-                agg_df[f"{metric}_mean"] = agg_df[f"{metric}_mean"].map(lambda x: f"{x:.2f}")
-                agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
+            #if f"{metric}_mean" in agg_df.columns:
+            agg_df[f"{metric}_mean"] = agg_df[f"{metric}_mean"].map(lambda x: f"{x:.2f}")
+            agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
         
         avg_path = f"{save_dir}/avg_results_{dataset}.csv"
         agg_df.to_csv(avg_path, index=False)
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
