@@ -31,5 +31,3 @@ if __name__ == "__main__":
     results = run_experiment(cfg, device)
 
     print("\n✅ Experiment finished. Results:")
-    for r in results:
-        print(r)
