@@ -170,7 +170,6 @@ def run_experiment(cfg, device):
                             })
 
                 # Save per-sample predictions
-                from src.utils import save_test_predictions
                 pred_save_path = f"{save_dir}/test_preds_{dataset}_{model_name}_p{patch_size}_run{run_id}.csv"
                 save_test_predictions(per_sample_preds, pred_save_path)
                 print(f"Saved test predictions to {pred_save_path}")
@@ -221,6 +220,7 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
