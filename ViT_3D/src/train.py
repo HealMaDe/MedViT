@@ -69,7 +69,7 @@ def evaluate(model, loader, criterion, num_classes, return_probs=False):
 
 
 def run_experiment(cfg, device):
-    dataset = cfg["dataset"]
+    dataset_name = cfg["dataset"]
     img_size = cfg["img_size"]
     patch_size = cfg["patch_size"]
     inflate_method = cfg["inflate_method"]
