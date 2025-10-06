@@ -159,10 +159,10 @@ def run_experiment(cfg, device):
         all_fps.append(fps)
         all_vram.append(vram_used)
 
-        print(f"🎯 Test Results - Loss: {test_loss:.4f}, "
+        print(f"🎯 Test Results - Loss: {test_loss:.2f}, "
               f"Acc: {test_acc*100:.2f}%, Bal Acc: {test_bal_acc*100:.2f}%, AUC: {test_auc*100:.2f}%")
         print(f"🕒 Train time: {train_time:.2f}s | Test time/img: {test_time_per_image*1000:.2f} ms | "
-              f"FPS: {fps:.2f} | VRAM: {vram_used:.1f} MB")
+              f"FPS: {fps:.2f} | VRAM: {vram_used:.2f} MB")
 
         # === Save logs per run ===
         log_path = f"{save_dir}/log_{dataset_name}_{model_size}_patch{patch_size}_run{run+1}.csv"
@@ -191,7 +191,7 @@ def run_experiment(cfg, device):
           f"Bal Acc: {mean[2]*100:.2f}% ± {std[2]*100:.2f}%, AUC: {mean[3]*100:.2f}% ± {std[3]*100:.2f}%")
     print(f"Train Time: {train_time_mean:.2f} ± {train_time_std:.2f}s, "
           f"Test Time/img: {test_time_mean*1000:.2f} ± {test_time_std*1000:.2f}ms, "
-          f"FPS: {fps_mean:.2f} ± {fps_std:.2f}, VRAM: {vram_mean:.1f} ± {vram_std:.1f} MB")
+          f"FPS: {fps_mean:.2f} ± {fps_std:.2f}, VRAM: {vram_mean:.1f} ± {vram_std:.2f} MB")
 
     # === Save extended summary CSV ===
     summary_file = f"{save_dir}/summary_results_{dataset_name}.csv"
