@@ -165,13 +165,13 @@ def run_experiment(cfg, device):
               f"FPS: {fps:.2f} | VRAM: {vram_used:.1f} MB")
 
         # === Save logs per run ===
-        log_path = f"{save_dir}/log_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
+        log_path = f"{save_dir}/log_{dataset_name}_{model_size}_patch{patch_size}_run{run+1}.csv"
 
         # === Save test probabilities ===
-        prob_path = f"{save_dir}/test_predictions_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
+        prob_path = f"{save_dir}/test_predictions_{dataset_name}_{model_size}_patch{patch_size}_run{run+1}.csv"
 
         # === Plot curves ===
-        plot_path = f"{save_dir}/curves_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.png"
+        plot_path = f"{save_dir}/curves_{dataset_name}_{model_size}_patch{patch_size}_run{run+1}.png"
 
         save_logs(history, log_path)
         save_probs(dataset_name, test_probs, num_classes, prob_path)
