@@ -95,7 +95,7 @@ def run_experiment(cfg, device):
         print(f"\n=== Run {run+1}/{robustness} for {dataset_name} ===")
         print(f"Patch size: {patch_size}, Inflation: {inflate_method}")
 
-        train_loader, val_loader, test_loader, num_classes = get_loaders(dataset_name)
+        train_loader, val_loader, test_loader, num_classes = get_loaders(dataset_name,batch_size)
 
         # Create ViT-3D
         model = ViT3D(
