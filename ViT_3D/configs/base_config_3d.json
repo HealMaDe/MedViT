@@ -1,10 +1,10 @@
 {
-  "dataset": "vesselmnist3d",
+  "dataset": "nodulemnist3d",
   "img_size": 28,
   "patch_size": 28,
   "model_size": "tiny",
   "batch_size": 8,
-  "epochs": 100,
+  "epochs": 20,
   "lr": 1e-5,
   "scheduler_step": 30,
   "scheduler_gamma": 0.5,
