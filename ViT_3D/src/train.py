@@ -103,8 +103,7 @@ def run_experiment(cfg, device):
             patch_size,
             num_classes,
             pretrained=True,
-            inflate_method,
-        ).to(DEVICE)
+            inflate_method)
 
         optimizer = optim.AdamW(model.parameters(), lr, weight_decay=0.05)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
