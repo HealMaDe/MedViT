@@ -85,7 +85,7 @@ def run_experiment(cfg, device):
     os.makedirs(save_dir, exist_ok=True)
 
     # Dataset
-    npz_path = f"../data/{dataset}.npz"
+    npz_path = f"../data/{dataset_name}.npz"
     
     all_results = []
     all_train_times, all_test_times, all_fps, all_vram = [], [], [], []
