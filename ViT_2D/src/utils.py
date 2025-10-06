@@ -9,6 +9,16 @@ def save_logs(history, save_path):
         writer.writerow(history.keys())
         writer.writerows(zip(*history.values()))
 
+def save_test_predictions(predictions, save_path):
+    """
+    predictions: list of dicts, each with keys: 'dataset', 'true_label', 'probabilities'
+    """
+    with open(save_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["dataset", "true_label"] + [f"class_{i}_prob" for i in range(len(predictions[0]["probabilities"]))])
+        for p in predictions:
+            writer.writerow([p["dataset"], p["true_label"], *p["probabilities"]])
+
 def plot_curves(history, save_path):
     plt.figure(figsize=(12, 4))
     plt.subplot(1, 3, 1)
@@ -28,3 +38,4 @@ def plot_curves(history, save_path):
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
+
