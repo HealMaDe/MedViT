@@ -98,12 +98,12 @@ def run_experiment(cfg, device):
 
         # Create ViT-3D
         model = ViT3D(
-            model_size,
-            img_size,
-            patch_size,
-            num_classes,
+            model_size=model_size,
+            img_size=img_size,
+            patch_size=patch_size,
+            num_classes=num_classes,
             pretrained=True,
-            inflate_method)
+            inflate_method=inflate_method)
 
         optimizer = optim.AdamW(model.parameters(), lr, weight_decay=0.05)
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
