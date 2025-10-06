@@ -35,13 +35,13 @@ def train_one_epoch(model, loader, optimizer, criterion,device):
 
 
 @torch.no_grad()
-def evaluate(model, loader, criterion, num_classes, return_probs=False):
+def evaluate(model, loader, criterion, num_classes, device, return_probs=False):
     model.eval()
     running_loss = 0.0
     all_labels, all_preds, all_probs = [], [], []
 
     for imgs, labels in loader:
-        imgs, labels = imgs.to(DEVICE), labels.to(DEVICE)
+        imgs, labels = imgs.to(device), labels.to(device)
         outputs = model(imgs)
         loss = criterion(outputs, labels)
         running_loss += loss.item() * imgs.size(0)
@@ -114,12 +114,12 @@ def run_experiment(cfg, device):
         history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": [], "val_bal_acc": [], "val_auc": []}
         best_val_loss, best_ckpt = float("inf"), None
 
-        torch.cuda.reset_peak_memory_stats(device=DEVICE) if DEVICE == "cuda" else None
+        torch.cuda.reset_peak_memory_stats(device=device) if device == "cuda" else None
         train_start = time.time()
 
         for epoch in range(1, epochs + 1):
             train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion,device)
-            val_loss, val_acc, val_bal_acc, val_auc = evaluate(model, val_loader, criterion, num_classes)
+            val_loss, val_acc, val_bal_acc, val_auc = evaluate(model, val_loader, criterion, num_classes, device)
 
             print(f"Epoch {epoch}/{epochs} | LR {optimizer.param_groups[0]['lr']:.2e} "
                   f"| Train loss {train_loss:.2f} / Train acc {train_acc*100:.2f}% "
@@ -141,12 +141,12 @@ def run_experiment(cfg, device):
             scheduler.step()
 
         train_time = time.time() - train_start
-        vram_used = torch.cuda.max_memory_allocated(device=DEVICE) / (1024**2) if DEVICE == "cuda" else 0
+        vram_used = torch.cuda.max_memory_allocated(device=device) / (1024**2) if device == "cuda" else 0
 
         # === Test Evaluation with timing + probabilities ===
-        model.load_state_dict(torch.load(best_ckpt, map_location=DEVICE))
+        model.load_state_dict(torch.load(best_ckpt, map_location=device))
         test_start = time.time()
-        test_loss, test_acc, test_bal_acc, test_auc, test_probs = evaluate(model, test_loader, criterion, num_classes, return_probs=True)
+        test_loss, test_acc, test_bal_acc, test_auc, test_probs = evaluate(model, test_loader, criterion, num_classes, device, return_probs=True)
         test_time = time.time() - test_start
 
         total_images = len(test_loader.dataset)
