@@ -12,12 +12,12 @@ from src.model_3d import ViT3D
 from src.utils import save_logs, save_probs, plot_curves, save_extended_summary
 
 
-def train_one_epoch(model, loader, optimizer, criterion):
+def train_one_epoch(model, loader, optimizer, criterion,device):
     model.train()
     running_loss, correct, total = 0.0, 0, 0
 
     for imgs, labels in loader:
-        imgs, labels = imgs.to(DEVICE), labels.to(DEVICE)
+        imgs, labels = imgs.to(device), labels.to(device)
 
         optimizer.zero_grad()
         outputs = model(imgs)
@@ -118,7 +118,7 @@ def run_experiment(cfg, device):
         train_start = time.time()
 
         for epoch in range(1, epochs + 1):
-            train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
+            train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion,device)
             val_loss, val_acc, val_bal_acc, val_auc = evaluate(model, val_loader, criterion, num_classes)
 
             print(f"Epoch {epoch}/{epochs} | LR {optimizer.param_groups[0]['lr']:.2e} "
