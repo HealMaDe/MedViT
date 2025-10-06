@@ -120,7 +120,7 @@ def run_experiment(cfg, device):
             train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
             val_loss, val_acc, val_bal_acc, val_auc = evaluate(model, val_loader, criterion, num_classes)
 
-            print(f"Epoch {epoch}/{EPOCHS} | LR {optimizer.param_groups[0]['lr']:.2e} "
+            print(f"Epoch {epoch}/{epochs} | LR {optimizer.param_groups[0]['lr']:.2e} "
                   f"| Train loss {train_loss:.2f} / Train acc {train_acc*100:.2f}% "
                   f"| Val loss {val_loss:.2f} / Val acc {val_acc*100:.2f}% "
                   f"/ Val bal_acc {val_bal_acc*100:.2f}% / Val AUC {val_auc*100:.2f}%")
@@ -134,7 +134,7 @@ def run_experiment(cfg, device):
 
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                best_ckpt = f"{SAVE_DIR}/best_{dataset_name}_{inflate_method}_patch{patch_size}_run{run+1}.pth"
+                best_ckpt = f"{save_dir}/best_{dataset_name}_{inflate_method}_patch{patch_size}_run{run+1}.pth"
                 torch.save(model.state_dict(), best_ckpt)
 
             scheduler.step()
@@ -164,13 +164,13 @@ def run_experiment(cfg, device):
               f"FPS: {fps:.2f} | VRAM: {vram_used:.1f} MB")
 
         # === Save logs per run ===
-        log_path = f"{SAVE_DIR}/log_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
+        log_path = f"{save_dir}/log_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
 
         # === Save test probabilities ===
-        prob_path = f"{SAVE_DIR}/test_predictions_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
+        prob_path = f"{save_dir}/test_predictions_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
 
         # === Plot curves ===
-        plot_path = f"{SAVE_DIR}/curves_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.png"
+        plot_path = f"{save_dir}/curves_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.png"
 
         save_logs(history, log_path)
         save_probs(dataset_name, test_probs, num_classes, prob_path)
@@ -193,7 +193,7 @@ def run_experiment(cfg, device):
           f"FPS: {fps_mean:.2f} ± {fps_std:.2f}, VRAM: {vram_mean:.1f} ± {vram_std:.1f} MB")
 
     # === Save extended summary CSV ===
-    summary_file = f"{SAVE_DIR}/summary_results_{dataset_name}.csv"
+    summary_file = f"{save_dir}/summary_results_{dataset_name}.csv"
     header = [
         "dataset", "model", "patch_size",
         "test_loss_mean", "test_loss_std",
