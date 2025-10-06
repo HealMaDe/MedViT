@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 
 from src.data_loader import MedMNISTDataset, get_transforms
 from src.model import get_model
-from src.utils import save_logs, plot_curves
+from src.utils import save_logs, plot_curves, save_test_predictions
+
 
 
 def train_one_epoch(model, loader, optimizer, criterion, device):
@@ -151,7 +152,30 @@ def run_experiment(cfg, device):
                 test_loss, test_acc, test_bal_acc, test_auc, test_time, fps = evaluate(
                     model, test_loader, criterion, num_classes, device
                 )
-                
+
+                # --- Collect per-sample test predictions ---
+                per_sample_preds = []
+                model.eval()
+                with torch.no_grad():
+                    for imgs, labels in test_loader:
+                        imgs, labels = imgs.to(device), labels.long().to(device)
+                        outputs = model(imgs)
+                        probs = torch.softmax(outputs, dim=1).cpu().numpy()
+                        labels = labels.cpu().numpy()
+                        for i in range(len(labels)):
+                            per_sample_preds.append({
+                                "dataset": dataset,
+                                "true_label": int(labels[i]),
+                                "probabilities": probs[i].tolist()
+                            })
+
+                # Save per-sample predictions
+                from src.utils import save_test_predictions
+                pred_save_path = f"{save_dir}/test_preds_{dataset}_{model_name}_p{patch_size}_run{run_id}.csv"
+                save_test_predictions(per_sample_preds, pred_save_path)
+                print(f"Saved test predictions to {pred_save_path}")
+
+                # Metrics & logs
                 test_time_per_img = (test_time / num_test_samples) * 1000   # ms
                 peak_vram_mb = torch.cuda.max_memory_allocated() / (1024**2) if device == "cuda" else "N/A"
 
@@ -170,7 +194,7 @@ def run_experiment(cfg, device):
                 }
                 all_runs.append(run_result)
 
-                # Save logs & plots only for best checkpoint
+                # Save logs & plots
                 log_path = f"{save_dir}/log_{dataset}_{model_name}_p{patch_size}_run{run_id}.csv"
                 plot_path = f"{save_dir}/curves_{dataset}_{model_name}_p{patch_size}_run{run_id}.png"
                 save_logs(history, log_path)
@@ -189,7 +213,6 @@ def run_experiment(cfg, device):
             agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
 
         for metric in ["test_loss", "train_time", "test_time_per_image", "fps", "vram_mb"]:
-            #if f"{metric}_mean" in agg_df.columns:
             agg_df[f"{metric}_mean"] = agg_df[f"{metric}_mean"].map(lambda x: f"{x:.2f}")
             agg_df[f"{metric}_std"]  = agg_df[f"{metric}_std"].map(lambda x: f"{x:.2f}")
         
@@ -198,6 +221,7 @@ def run_experiment(cfg, device):
         print(f"\nSaved averaged robustness results to {avg_path}")
 
     return all_runs
+
 
 
 
