@@ -8,6 +8,7 @@ import numpy as np
 
 from src.data_loader_3d import MedMNIST3DDataset, get_loaders
 from src.model_3d import ViT3D
+from src.utils import save_logs, save_probs, plot_curves, save_extended_summary
 
 
 def train_one_epoch(model, loader, optimizer, criterion):
@@ -163,37 +164,18 @@ def run_experiment(cfg, device):
               f"FPS: {fps:.2f} | VRAM: {vram_used:.1f} MB")
 
         # === Save logs per run ===
-        log_path = f"{SAVE_DIR}/log_{dataset_name}_{inflate_method}_patch{patch_size}_run{run+1}.csv"
-        with open(log_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(history.keys())
-            writer.writerows(zip(*history.values()))
+        log_path = f"{SAVE_DIR}/log_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
 
         # === Save test probabilities ===
-        prob_path = f"{SAVE_DIR}/test_predictions_{dataset_name}_patch{patch_size}_run{run+1}.csv"
-        with open(prob_path, "w", newline="") as f:
-            writer = csv.writer(f)
-            header = ["dataset", "true_label"] + [f"prob_class_{i}" for i in range(num_classes)]
-            writer.writerow(header)
-            for label, probs in test_probs:
-                writer.writerow([dataset_name, label] + probs.tolist())
+        prob_path = f"{SAVE_DIR}/test_predictions_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.csv"
 
         # === Plot curves ===
-        plt.figure(figsize=(15, 4))
-        plt.subplot(1, 4, 1); plt.plot(history["train_loss"], label="Train"); plt.plot(history["val_loss"], label="Val")
-        plt.title("Loss"); plt.legend()
-        plt.subplot(1, 4, 2); plt.plot(history["train_acc"], label="Train"); plt.plot(history["val_acc"], label="Val")
-        plt.title("Accuracy"); plt.legend()
-        plt.subplot(1, 4, 3); plt.plot(history["val_bal_acc"], label="Val Bal Acc", color='orange')
-        plt.title("Balanced Accuracy"); plt.legend()
-        plt.subplot(1, 4, 4); plt.plot(history["val_auc"], label="Val AUC")
-        plt.title("Validation AUC"); plt.legend()
-        plt.tight_layout()
-        plt.savefig(f"{SAVE_DIR}/curves_{dataset_name}_{inflate_method}_patch{patch_size}_run{run+1}.png")
-        plt.close()
+        plot_path = f"{SAVE_DIR}/curves_{dataset_name}_{model_name}_patch{patch_size}_run{run+1}.png"
 
-        gc.collect()
-        torch.cuda.empty_cache()
+        save_logs(history, log_path)
+        save_probs(dataset_name, test_probs, num_classes, prob_path)
+        plot_curves(history, plot_path)
+        
 
     # === Aggregate results ===
     all_results = np.array(all_results)
@@ -223,21 +205,19 @@ def run_experiment(cfg, device):
         "fps_mean", "fps_std",
         "vram_mb_mean", "vram_mb_std"
     ]
-    file_exists = os.path.isfile(summary_file)
-    with open(summary_file, "a", newline="") as f:
-        writer = csv.writer(f)
-        if not file_exists:
-            writer.writerow(header)
-        writer.writerow([
-            dataset_name, model_size, patch_size,
-            round(mean[0], 2), round(std[0], 2),
-            round(mean[1]*100, 2), round(std[1]*100, 2),
-            round(mean[2]*100, 2), round(std[2]*100, 2),
-            round(mean[3]*100, 2), round(std[3]*100, 2),
-            round(train_time_mean, 2), round(train_time_std, 2),
-            round(test_time_mean*1000, 2), round(test_time_std*1000, 2),
-            round(fps_mean, 2), round(fps_std, 2),
-            round(vram_mean, 2), round(vram_std, 2)
-        ])
+
+    row = [
+        dataset, config["model_size"], patch_size,
+        round(mean[0], 2), round(std[0], 2),
+        round(mean[1]*100, 2), round(std[1]*100, 2),
+        round(mean[2]*100, 2), round(std[2]*100, 2),
+        round(mean[3]*100, 2), round(std[3]*100, 2),
+        round(train_time_mean, 2), round(train_time_std, 2),
+        round(test_time_mean*1000, 2), round(test_time_std*1000, 2),
+        round(fps_mean, 2), round(fps_std, 2),
+        round(vram_mean, 2), round(vram_std, 2)
+    ]
+
+    save_extended_summary(summary_file, header, row)
 
     return mean
