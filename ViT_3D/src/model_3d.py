@@ -33,9 +33,11 @@ class ViT3D(nn.Module):
     3D Vision Transformer with inflation method
     """
     def __init__(self, model_size="tiny", img_size=28, patch_size=14,
-                 num_classes=2, pretrained=True, inflate_method="repeat"):
+                 num_classes=2, pretrained=True, inflate_method="repeat",
+                device="cpu"):
         super().__init__()
 
+        self.device = device
         # Load pretrained 2D ViT (ImageNet Weights)
         if model_size == "tiny":
             self.vit_2d = timm.create_model("vit_tiny_patch16_224", pretrained=pretrained, num_classes=0)
@@ -45,7 +47,7 @@ class ViT3D(nn.Module):
             self.vit_2d = timm.create_model("vit_base_patch16_224", pretrained=pretrained, num_classes=0)
 
         # Move vit_2d to device first
-        self.vit_2d = self.vit_2d.to(DEVICE)
+        self.vit_2d = self.vit_2d.to(self.device)
 
         # Get ViT parameters
         embed_dim = self.vit_2d.embed_dim
@@ -56,7 +58,7 @@ class ViT3D(nn.Module):
             patch_size=patch_size,
             in_chans=3,
             embed_dim=embed_dim
-        ).to(DEVICE)
+        ).to(self.device)
 
         # Inflate weights using specified method (we used the repeat method in thsi project)
         self._inflate_patch_embedding(patch_size, inflate_method)
@@ -71,8 +73,8 @@ class ViT3D(nn.Module):
         self.pos_embed = self._init_pos_embed_3d()
 
         # Classification head
-        self.head = nn.Linear(embed_dim, num_classes).to(DEVICE)
-
+        self.head = nn.Linear(embed_dim, num_classes).to(self.device)
+                    
         # Initialize head
         nn.init.zeros_(self.head.weight)
         nn.init.zeros_(self.head.bias)
@@ -96,13 +98,13 @@ class ViT3D(nn.Module):
 
         # Apply inflated weights
         with torch.no_grad():
-            self.patch_embed.proj.weight.data = weight_3d.to(DEVICE)
+            self.patch_embed.proj.weight.data = weight_3d.to(self.device)
             if conv2d.bias is not None:
-                self.patch_embed.proj.bias.data = conv2d.bias.data.clone().to(DEVICE)
+                self.patch_embed.proj.bias.data = conv2d.bias.data.clone().to(self.device)
 
     def _init_pos_embed_3d(self):
           """Interpolate 2D positional embeddings into 3D space."""
-          pos_embed_2d = self.vit_2d.pos_embed.to(DEVICE)  # (1, N+1, D)
+          pos_embed_2d = self.vit_2d.pos_embed.to(self.device)  # (1, N+1, D)
           cls_embed = pos_embed_2d[:, 0:1, :]  # keep CLS as is
           patch_embed_2d = pos_embed_2d[:, 1:, :]  # (1, N, D)
 
