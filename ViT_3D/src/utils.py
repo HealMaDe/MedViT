@@ -4,7 +4,7 @@ import torch
 import matplotlib.pyplot as plt
 import gc
 
-def save_logs(history, save_path):
+def save_logs(history, log_path):
   with open(log_path, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(history.keys())
