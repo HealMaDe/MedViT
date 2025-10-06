@@ -5,6 +5,7 @@ import torch.optim as optim
 from sklearn.metrics import roc_auc_score, balanced_accuracy_score
 from torch.utils.data import DataLoader
 import numpy as np
+import os
 
 from src.data_loader_3d import MedMNIST3DDataset, get_loaders
 from src.model_3d import ViT3D
