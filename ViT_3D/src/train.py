@@ -208,7 +208,7 @@ def run_experiment(cfg, device):
     ]
 
     row = [
-        dataset_name, config["model_size"], patch_size,
+        dataset_name, cfg["model_size"], patch_size,
         round(mean[0], 2), round(std[0], 2),
         round(mean[1]*100, 2), round(std[1]*100, 2),
         round(mean[2]*100, 2), round(std[2]*100, 2),
