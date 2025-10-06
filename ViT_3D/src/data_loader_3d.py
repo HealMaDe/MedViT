@@ -63,7 +63,7 @@ class RandomRotate3D:
 
 
 def get_loaders(dataset_name):
-    npz_path = os.path.join(DATA_DIR, f"{dataset_name}.npz")
+    #npz_path = os.path.join(DATA_DIR, f"{dataset_name}.npz")
 
     # Enhanced transforms with working augmentation
     train_transform = transforms.Compose([
