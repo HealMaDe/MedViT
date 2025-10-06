@@ -62,7 +62,7 @@ class RandomRotate3D:
         return x
 
 
-def get_loaders(dataset_name):
+def get_loaders(dataset_name,batch_size):
     npz_path = f"../data/{dataset_name}.npz"
 
     # Enhanced transforms with working augmentation
