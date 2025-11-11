@@ -1,0 +1,13 @@
+{
+  "img_size": 28,
+  "batch_size": 4,
+  "epochs": 80,
+  "lr": 1e-5,
+  "scheduler_step": 20,
+  "scheduler_gamma": 0.5,
+  "inflate_method": "repeat",
+  "save_dir": "./results_3d"
+}
+
+
+
