@@ -8,7 +8,7 @@ The project provides two separate pipelines:
 - **2D ViT**: For standard 2D medical image datasets (e.g., BreastMNIST)
 - **3D ViT**: For volumetric medical image datasets (e.g., VesselMNIST3D)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 ```bash
