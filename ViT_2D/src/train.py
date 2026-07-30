@@ -6,6 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from sklearn.metrics import roc_auc_score, balanced_accuracy_score
 import matplotlib.pyplot as plt
+from torch.cuda.amp import autocast, GradScaler
 
 from src.data_loader import MedMNISTDataset, get_transforms
 from src.model import get_model
@@ -13,25 +14,35 @@ from src.utils import save_logs, plot_curves, save_test_predictions
 
 
 
-def train_one_epoch(model, loader, optimizer, criterion, device):
+def train_one_epoch(model, loader, optimizer, criterion, scaler, device):
     model.train()
+
     running_loss, correct, total = 0.0, 0, 0
     t0 = time.time()
-    for imgs, labels in loader:
-        imgs, labels = imgs.to(device), labels.long().to(device)
 
-        optimizer.zero_grad()
-        outputs = model(imgs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+    for imgs, labels in loader:
+
+        imgs = imgs.to(device, non_blocking=True)
+        labels = labels.long().to(device, non_blocking=True)
+
+        optimizer.zero_grad(set_to_none=True)
+
+        with autocast(enabled=(device=="cuda")):
+            outputs = model(imgs)
+            loss = criterion(outputs, labels)
+
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         running_loss += loss.item() * imgs.size(0)
+
         preds = outputs.argmax(1)
         correct += (preds == labels).sum().item()
         total += labels.size(0)
 
     epoch_time = time.time() - t0
+
     return running_loss / total, correct / total, epoch_time
 
 
@@ -43,7 +54,8 @@ def evaluate(model, loader, criterion, num_classes, device):
 
     t0 = time.time()
     for imgs, labels in loader:
-        imgs, labels = imgs.to(device), labels.long().to(device)
+        imgs, labels = imgs.to(device,non_blocking=True), labels.long().to(device,non_blocking=True)
+
         outputs = model(imgs)
         loss = criterion(outputs, labels)
 
@@ -70,12 +82,19 @@ def evaluate(model, loader, criterion, num_classes, device):
         else:
             auc = roc_auc_score(all_labels, np.array(all_probs), multi_class="ovr", average="macro")
     except Exception:
+        print("AUC ERROR:", Exception)
         auc = 0.0
 
     return running_loss / len(loader.dataset), acc, bal_acc, auc, elapsed, fps
 
 
 def run_experiment(cfg, device):
+
+    scaler = GradScaler(
+        enabled=(device=="cuda"),
+        init_scale=1024
+    )
+
     dataset = cfg["dataset"]
     img_size = cfg["img_size"]
     patch_sizes = cfg["patch_sizes"]
@@ -91,7 +110,7 @@ def run_experiment(cfg, device):
     os.makedirs(save_dir, exist_ok=True)
 
     # Dataset
-    npz_path = f"../data/{dataset}.npz"
+    npz_path = f"/mnt/2T/hajipour/healmade/MedViT/ViT_2D/data/{dataset}.npz"
     train_tf, val_tf = get_transforms(img_size)
     train_ds = MedMNISTDataset("train", dataset, npz_path, transform=train_tf)
     val_ds   = MedMNISTDataset("val", dataset, npz_path, transform=val_tf)
@@ -126,7 +145,14 @@ def run_experiment(cfg, device):
 
                 total_train_time = 0.0
                 for epoch in range(1, epochs + 1):
-                    train_loss, train_acc, epoch_time = train_one_epoch(model, train_loader, optimizer, criterion, device)
+                    train_loss, train_acc, epoch_time = train_one_epoch(
+                        model,
+                        train_loader,
+                        optimizer,
+                        criterion,
+                        scaler,
+                        device
+                    )
                     total_train_time += epoch_time
                     val_loss, val_acc, val_bal_acc, val_auc, _, _ = evaluate(model, val_loader, criterion, num_classes, device)
 
