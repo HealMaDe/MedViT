@@ -8,10 +8,10 @@ if __name__ == "__main__":
         base_cfg = json.load(f)
 
     # --- User inputs ---
-    dataset = "breastmnist"     # 👈 user sets
-    img_size = 28               # 👈 user sets (depends on dataset)
-    patch_sizes = [28, 14, 7]   # 👈 user sets
-    models = ["vit_base_patch16_224"]  # 👈 user sets
+    dataset = "organsmnist_128"     # 👈 user sets
+    img_size = 128               # 👈 user sets (depends on dataset)
+    patch_sizes = [1]   # 👈 user sets
+    models = ["vit_tiny_patch16_224"]  # 👈 user sets
     robustness = 3              # 👈 user sets
 
     # --- Merge into one config dict ---
