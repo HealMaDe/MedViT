@@ -1,9 +1,9 @@
 {
-  "img_size": 28,
-  "batch_size": 8,
-  "epochs": 100,
+  "img_size": 128,
+  "batch_size": 16,
+  "epochs": 80,
   "lr": 1e-4,
-  "scheduler_step": 30,
+  "scheduler_step": 25,
   "scheduler_gamma": 0.5,
   "save_dir": "./results"
 }
