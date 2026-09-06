@@ -1,6 +1,12 @@
 import json
 import torch
 from train import run_experiment
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    category=FutureWarning
+)
 
 if __name__ == "__main__":
     # --- Load constants from config ---
