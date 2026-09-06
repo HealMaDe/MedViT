@@ -110,7 +110,7 @@ def run_experiment(cfg, device):
     os.makedirs(save_dir, exist_ok=True)
 
     # Dataset
-    npz_path = f"/root/workspace/MedViT/ViT_2D/data/{dataset}.npz"
+    npz_path = f"/workspace/MedViT/ViT_2D/data/{dataset}.npz"
     train_tf, val_tf = get_transforms(img_size)
     train_ds = MedMNISTDataset("train", dataset, npz_path, transform=train_tf)
     val_ds   = MedMNISTDataset("val", dataset, npz_path, transform=val_tf)
