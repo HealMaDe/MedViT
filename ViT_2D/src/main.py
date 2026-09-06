@@ -4,12 +4,12 @@ from src.train import run_experiment
 
 if __name__ == "__main__":
     # --- Load constants from config ---
-    with open("../configs/base_config.json", "r") as f:
+    with open("root/workspace/MedViT/ViT_2D/configs/base_config.json", "r") as f:
         base_cfg = json.load(f)
 
     # --- User inputs ---
-    dataset = "organsmnist_128"     # 👈 user sets
-    img_size = 128               # 👈 user sets (depends on dataset)
+    dataset = "organsmnist_224"     # 👈 user sets
+    img_size = 224               # 👈 user sets (depends on dataset)
     patch_sizes = [1]   # 👈 user sets
     models = ["vit_tiny_patch16_224"]  # 👈 user sets
     robustness = 3              # 👈 user sets
