@@ -8,9 +8,9 @@ from sklearn.metrics import roc_auc_score, balanced_accuracy_score
 import matplotlib.pyplot as plt
 from torch.cuda.amp import autocast, GradScaler
 
-from src.data_loader import MedMNISTDataset, get_transforms
-from src.model import get_model
-from src.utils import save_logs, plot_curves, save_test_predictions
+from data_loader import MedMNISTDataset, get_transforms
+from model import get_model
+from utils import save_logs, plot_curves, save_test_predictions
 
 
 
@@ -110,7 +110,7 @@ def run_experiment(cfg, device):
     os.makedirs(save_dir, exist_ok=True)
 
     # Dataset
-    npz_path = f"/mnt/2T/hajipour/healmade/MedViT/ViT_2D/data/{dataset}.npz"
+    npz_path = f"/root/workspace/MedViT/ViT_2D/data/{dataset}.npz"
     train_tf, val_tf = get_transforms(img_size)
     train_ds = MedMNISTDataset("train", dataset, npz_path, transform=train_tf)
     val_ds   = MedMNISTDataset("val", dataset, npz_path, transform=val_tf)
