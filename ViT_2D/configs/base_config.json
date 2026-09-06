@@ -5,7 +5,7 @@
   "lr": 1e-4,
   "scheduler_step": 25,
   "scheduler_gamma": 0.5,
-  "save_dir": "root/workspace/results"
+  "save_dir": "workspace/results"
 }
 
 
