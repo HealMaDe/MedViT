@@ -10,7 +10,7 @@ warnings.filterwarnings(
 
 if __name__ == "__main__":
     # --- Load constants from config ---
-    with open("root/workspace/MedViT/ViT_2D/configs/base_config.json", "r") as f:
+    with open("workspace/MedViT/ViT_2D/configs/base_config.json", "r") as f:
         base_cfg = json.load(f)
 
     # --- User inputs ---
