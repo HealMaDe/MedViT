@@ -1,11 +1,11 @@
 {
-  "img_size": 128,
-  "batch_size": 16,
+  "img_size": 224,
+  "batch_size": 224,
   "epochs": 80,
   "lr": 1e-4,
   "scheduler_step": 25,
   "scheduler_gamma": 0.5,
-  "save_dir": "./results"
+  "save_dir": "root/workspace/results"
 }
 
 
