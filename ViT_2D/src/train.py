@@ -143,6 +143,10 @@ def run_experiment(cfg, device):
                 best_val_loss = float("inf")
                 best_ckpt = None
 
+                # Early stopping
+                patience = 10
+                epochs_without_improvement = 0
+
                 total_train_time = 0.0
                 for epoch in range(1, epochs + 1):
                     train_loss, train_acc, epoch_time = train_one_epoch(
@@ -168,10 +172,19 @@ def run_experiment(cfg, device):
 
                     if val_loss < best_val_loss:
                         best_val_loss = val_loss
+                        epochs_without_improvement = 0
                         best_ckpt = f"{save_dir}/best_{dataset}_{model_name}_p{patch_size}_run{run_id}.pth"
                         torch.save(model.state_dict(), best_ckpt)
+                    else:
+                        epochs_without_improvement += 1
 
                     scheduler.step()
+
+                    # Early stopping
+                    if epochs_without_improvement >= patience:
+                        print(f"Early stopping triggered at epoch {epoch}. "
+                              f"No improvement for {patience} epochs.")
+                        break
 
                 # Load best model and test
                 model.load_state_dict(torch.load(best_ckpt, map_location=device))
