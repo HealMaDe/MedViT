@@ -14,8 +14,8 @@ if __name__ == "__main__":
         base_cfg = json.load(f)
 
     # --- User inputs ---
-    dataset = "organsmnist_224"     # 👈 user sets
-    img_size = 224               # 👈 user sets (depends on dataset)
+    dataset = "organsmnist_128"     # 👈 user sets
+    img_size = 128               # 👈 user sets (depends on dataset)
     patch_sizes = [1]   # 👈 user sets
     models = ["vit_tiny_patch16_224"]  # 👈 user sets
     robustness = 3              # 👈 user sets
@@ -32,6 +32,7 @@ if __name__ == "__main__":
 
     # --- Device selection ---
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    print("using device",device)
 
     # --- Run experiment ---
     results = run_experiment(cfg, device)
