@@ -30,7 +30,7 @@ Open `main.py` and set the desired variables
 dataset = "breastmnist"            # Dataset name
 img_size = 28                      # Input image size
 patch_sizes = [28, 14, 7]          # Patch sizes to evaluate
-models = ["vit_base_patch16_224"]  # ViT backbone (timm)
+models = ["vit_base_patch16_224"]  # ViT backbone (timm). Swin and FlexiViT architectures are also applicable here
 robustness = 3                     # Number of repeated runs
 ```
 
