@@ -12,7 +12,7 @@ if __name__ == "__main__":
     with open("/mnt/18T/healmade/vit_patch/MedViT/ViT_2D/configs/base_config.json", "r") as f:
         base_cfg = json.load(f)
 
-    dataset = "organsmnist"  # بدون _28
+    dataset = "organsmnist"  
     img_size = 28
     patch_sizes = [1, 2, 4]
     models = ["vit_small_patch16_224"]
