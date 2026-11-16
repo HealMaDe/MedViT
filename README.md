@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="abstract.jpeg" alt="MedViT Overview" width="850"/>
+</p>
+
 # Effect of Patch Size on Fine-tuning Vision Transformers In 2D and 3D Medical Image Classification
 
 This repository contains fine-tuning of ViTs for both 2D and 3D medical image classification tasks. The code supports customizable patch sizes and models (tiny, small, base, etc.).
