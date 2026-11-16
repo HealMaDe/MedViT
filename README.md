@@ -48,3 +48,16 @@ python main.py
 ```
 
 
+## Citation
+
+If you find this repository useful in your research, please cite our work:
+
+```bibtex
+@article{dehghan2026patchsize,
+  title={Effect of Patch Size on Fine-Tuning Vision Transformers in Two-Dimensional and Three-Dimensional Medical Image Classification},
+  author={Dehghan, Massoud and Woitek, Ramona and Mahbod, Amirreza},
+  journal={arXiv preprint arXiv:2602.18614},
+  year={2026},
+  doi={10.48550/arXiv.2602.18614}
+}
+
