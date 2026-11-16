@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="abstract.jpeg" alt="MedViT Overview" width="850"/>
+  <img src="abstract.jpeg" alt="MedViT Overview" width="1000"/>
 </p>
 
 # Effect of Patch Size on Fine-tuning Vision Transformers In 2D and 3D Medical Image Classification
